@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Store.Core\Store.Core.csproj" />
-    <ProjectReference Include="..\TatBlog.Data\Store.Data.csproj" />
+    <ProjectReference Include="..\Store.Data\Store.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
