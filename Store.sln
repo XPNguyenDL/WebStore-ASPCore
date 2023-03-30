@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Core", "Store.Core\Store.Core.csproj", "{FA99A45F-0539-4198-AED5-35B1E98E7FA0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Data", "TatBlog.Data\Store.Data.csproj", "{DD7557E5-4717-44ED-A5C0-A14CB066F8AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Data", "Store.Data\Store.Data.csproj", "{DD7557E5-4717-44ED-A5C0-A14CB066F8AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Services", "Store.Services\Store.Services.csproj", "{AE72C376-B7CB-4298-B927-6EC104A1D6B6}"
 EndProject
