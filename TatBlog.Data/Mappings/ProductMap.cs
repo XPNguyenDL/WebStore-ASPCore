@@ -1,0 +1,60 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
+using Store.Core.Entities;
+
+namespace Store.Data.Mappings;
+
+public class ProductMap : IEntityTypeConfiguration<Product>
+{
+	public void Configure(EntityTypeBuilder<Product> builder)
+	{
+		builder.ToTable("Products");
+
+		builder.HasKey(s => s.Id);
+
+		builder.Property(s => s.Name)
+			.IsRequired()
+			.HasMaxLength(128);
+
+		builder.Property(s => s.UrlSlug)
+			.IsRequired()
+			.HasMaxLength(256);
+
+		builder.Property(s => s.ShortIntro)
+			.IsRequired()
+			.HasMaxLength(256);
+
+		builder.Property(s => s.Description)
+			.HasMaxLength(512);
+
+		builder.Property(s => s.Price)
+			.IsRequired()
+			.HasDefaultValue(0);
+
+		builder.Property(s => s.Quantity)
+			.IsRequired()
+			.HasDefaultValue(0);
+
+		builder.Property(s => s.Discount)
+			.HasDefaultValue(0);
+
+		builder.Property(p => p.Active)
+			.IsRequired()
+			.HasDefaultValue(false);
+
+		builder.HasOne(p => p.Category)
+			.WithMany(c => c.Products)
+			.HasForeignKey(p => p.CategoryId)
+			.HasConstraintName("FK_Products_Categories")
+			.OnDelete(DeleteBehavior.Cascade);
+
+		builder.HasMany(o => o.Details)
+			.WithOne(d => d.Product)
+			.HasForeignKey(d => d.ProductId)
+			.HasConstraintName("FK_Products_Details")
+			.OnDelete(DeleteBehavior.Cascade);
+
+
+	}
+}

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Store.Core\Store.Core.csproj" />
+    <ProjectReference Include="..\TatBlog.Data\Store.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Media\" />
+    <Folder Include="Rss\" />
+    <Folder Include="Shops\" />
+  </ItemGroup>
+
+</Project>
