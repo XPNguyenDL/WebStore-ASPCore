@@ -39,8 +39,9 @@ public class Product : IEntity
 public class Feedback
 {
 	public Guid Id { get; set; }
+	public Guid ProductId { get; set; }
 	
-	public string UserID { get; set; }
+	public string UserName { get; set; }
 
 	public DateTime PostDate { get; set; }
 

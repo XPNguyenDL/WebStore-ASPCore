@@ -18,7 +18,7 @@ namespace Store.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     UrlSlug = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,7 +30,9 @@ namespace Store.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    MinPrice = table.Column<float>(type: "real", nullable: false, defaultValue: 0f),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     DiscountPercentage = table.Column<float>(type: "real", nullable: false, defaultValue: 0f),
                     Active = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
@@ -47,7 +49,7 @@ namespace Store.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ShortIntro = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     UrlSlug = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false, defaultValue: 0.0),
                     Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -78,9 +80,9 @@ namespace Store.Data.Migrations
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ShipAddress = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     ShipTel = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     Total = table.Column<double>(type: "float", nullable: false),
-                    DiscountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    DiscountId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,26 +91,26 @@ namespace Store.Data.Migrations
                         name: "FK_Orders_Discounts_DiscountId",
                         column: x => x.DiscountId,
                         principalTable: "Discounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Feedbacks",
+                name: "Feedback",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserID = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     PostDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Rate = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Feedbacks", x => x.Id);
+                    table.PrimaryKey("PK_Feedback", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Feedbacks_Products_Id",
-                        column: x => x.Id,
+                        name: "FK_Feedback_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -161,6 +163,11 @@ namespace Store.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Feedback_ProductId",
+                table: "Feedback",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_ProductId",
                 table: "OrderDetails",
                 column: "ProductId");
@@ -185,7 +192,7 @@ namespace Store.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Feedbacks");
+                name: "Feedback");
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");

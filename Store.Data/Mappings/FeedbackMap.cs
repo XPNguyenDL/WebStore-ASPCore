@@ -10,9 +10,9 @@ public class FeedbackMap : IEntityTypeConfiguration<Feedback>
 	{
 		builder.HasKey(p => p.Id);
 
-		builder.ToTable("Feedbacks");
+		builder.ToTable("Feedback");
 
-		builder.Property(p => p.UserID)
+		builder.Property(p => p.UserName)
 			.IsRequired()
 			.HasMaxLength(512);
 
@@ -30,7 +30,7 @@ public class FeedbackMap : IEntityTypeConfiguration<Feedback>
 
 		builder.HasOne(s => s.Product)
 			.WithMany(s => s.Feedbacks)
-			.HasForeignKey(s => s.Id)
+			.HasForeignKey(s => s.ProductId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}
 }

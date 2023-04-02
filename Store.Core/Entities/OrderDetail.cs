@@ -3,7 +3,7 @@
 public class OrderDetail
 {
 	public Guid OrderId { get; set; }
-	
+
 	public Guid ProductId { get; set; }
 
 	public int Quantity { get; set; }
@@ -14,7 +14,11 @@ public class OrderDetail
 	{
 		get
 		{
-			return Math.Round(Price * Quantity * (1 - Order.Discount.DiscountPercentage), 2);
+			if (Order.Discount != null)
+			{
+				return Math.Round(Price * Quantity * (1 - Order.Discount.DiscountPercentage), 2);
+			}
+			return Math.Round(Price * Quantity, 2);
 		}
 	}
 
