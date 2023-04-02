@@ -1,3 +1,4 @@
+using Store.WebAPI.Endpoints;
 using Store.WebAPI.Extensions;
 using Store.WebAPI.Mapsters;
 using Store.WebAPI.Validations;
@@ -17,8 +18,12 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 {
 	app.SetupRequestPipeline();
+	
+	// use seeder
+	app.UseDataSeeder();
 
 	// Config endpoint;
+	app.MapProductEndpoints();
 
 	app.Run();
 }
