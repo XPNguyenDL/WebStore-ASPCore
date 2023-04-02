@@ -10,7 +10,6 @@
     <Folder Include="Collections\" />
     <Folder Include="Constants\" />
     <Folder Include="DTO\" />
-    <Folder Include="Contracts\" />
     <Folder Include="Entities\" />
     <Folder Include="Settings\" />
   </ItemGroup>
