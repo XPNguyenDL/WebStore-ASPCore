@@ -49,6 +49,7 @@ namespace Store.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ShortIntro = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     UrlSlug = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false, defaultValue: 0.0),
@@ -74,6 +75,7 @@ namespace Store.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UrlSlug = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(56)", maxLength: 56, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(56)", maxLength: 56, nullable: true),
@@ -81,7 +83,6 @@ namespace Store.Data.Migrations
                     ShipAddress = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     ShipTel = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
                     Note = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
-                    Total = table.Column<double>(type: "float", nullable: false),
                     DiscountId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>

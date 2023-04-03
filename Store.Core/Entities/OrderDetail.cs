@@ -26,6 +26,8 @@ public class OrderDetail
 	// Navigation properties
 	// ======================================================
 
+
 	public virtual Order Order { get; set; }
+	
 	public virtual Product Product { get; set; }
 }

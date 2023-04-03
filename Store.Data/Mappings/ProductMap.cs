@@ -43,11 +43,23 @@ public class ProductMap : IEntityTypeConfiguration<Product>
 			.IsRequired()
 			.HasDefaultValue(false);
 
+		// Configure the timestamps
+		builder.Property(o => o.CreateDate)
+			.HasColumnType("datetime");
+
 		builder.HasOne(p => p.Category)
 			.WithMany(c => c.Products)
 			.HasForeignKey(p => p.CategoryId)
 			.HasConstraintName("FK_Products_Categories")
 			.OnDelete(DeleteBehavior.Cascade);
+
+		builder.HasMany(s => s.Pictures)
+			.WithOne(s => s.Product)
+			.HasForeignKey(s => s.ProductId)
+			.HasConstraintName("FK_Products_Pictures")
+			.OnDelete(DeleteBehavior.Cascade);
+
+
 
 		builder.HasMany(o => o.Details)
 			.WithOne(d => d.Product)

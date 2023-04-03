@@ -12,7 +12,7 @@ using Store.Data.Contexts;
 namespace Store.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20230402150650_Initial")]
+    [Migration("20230403112906_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -166,8 +166,10 @@ namespace Store.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
+                    b.Property<string>("UrlSlug")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
@@ -236,6 +238,9 @@ namespace Store.Data.Migrations
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)

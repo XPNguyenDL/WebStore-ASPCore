@@ -10,6 +10,8 @@ public class Product : IEntity
 
 	public string ShortIntro { get; set; }
 
+	public DateTime CreateDate { get; set; }
+
 	public string Description { get; set; }
 
 	public string UrlSlug { get; set; }

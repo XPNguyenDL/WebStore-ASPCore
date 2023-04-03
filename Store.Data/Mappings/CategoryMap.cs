@@ -22,5 +22,6 @@ public class CategoryMap : IEntityTypeConfiguration<Category>
 		builder.Property(p => p.UrlSlug)
 			.HasMaxLength(256)
 			.IsRequired();
+		
 	}
 }

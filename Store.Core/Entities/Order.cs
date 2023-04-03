@@ -19,6 +19,8 @@ public class Order : IEntity
 
 	public DateTime OrderDate { get; set; }
 
+	public string UrlSlug { get; set; }
+
 	public OrderStatus Status { get; set; }
 
 	public string FirstName { get; set; }

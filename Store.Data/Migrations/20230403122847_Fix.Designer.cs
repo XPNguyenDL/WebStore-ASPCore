@@ -12,8 +12,8 @@ using Store.Data.Contexts;
 namespace Store.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20230402180302_FixOrder")]
-    partial class FixOrder
+    [Migration("20230403122847_Fix")]
+    partial class Fix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,6 +166,11 @@ namespace Store.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("UrlSlug")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DiscountId");
@@ -233,6 +238,9 @@ namespace Store.Data.Migrations
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Description")
                         .HasMaxLength(512)
@@ -330,18 +338,13 @@ namespace Store.Data.Migrations
             modelBuilder.Entity("Store.Core.Entities.Product", b =>
                 {
                     b.HasOne("Store.Core.Entities.Category", "Category")
-                        .WithMany("Products")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Products_Categories");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Store.Core.Entities.Category", b =>
-                {
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Store.Core.Entities.Order", b =>

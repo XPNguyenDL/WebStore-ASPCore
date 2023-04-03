@@ -110,6 +110,7 @@ public class DataSeeder : IDataSeeder
 				Id = Guid.NewGuid(),
 				Quantity = 10,
 				Name = "Mừng cậu trở về",
+				CreateDate = DateTime.Now,
 				CategoryId = categories[0].Id,
 				ShortIntro = "Một Kaze hòa đồng, tươi sáng và một Moto giản đơn, nghiêm túc lại là bạn thân từ nhỏ.",
 				Description = "Dù khi trưởng thành và có những nhóm bạn khác nhau, hai chàng trai vẫn luôn hiểu rõ người kia hơn ai hết." +
@@ -125,6 +126,7 @@ public class DataSeeder : IDataSeeder
 			{
 				Id = Guid.NewGuid(),
 				Quantity = 10,
+				CreateDate = DateTime.Now,
 				Name = "Mừng cậu trở về",
 				CategoryId = categories[0].Id,
 				ShortIntro = "Một Kaze hòa đồng, tươi sáng và một Moto giản đơn, nghiêm túc lại là bạn thân từ nhỏ.",
