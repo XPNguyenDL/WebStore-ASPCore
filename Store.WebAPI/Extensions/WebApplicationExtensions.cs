@@ -21,7 +21,7 @@ public static class WebApplicationExtensions
 
 		builder.Services.AddScoped<IMediaManager, LocalFileSystemMediaManager>();
 		builder.Services.AddScoped<IDataSeeder, DataSeeder>();
-		builder.Services.AddScoped<IProductRepository, ProductRepository>();
+		builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 
 
 		return builder;
