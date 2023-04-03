@@ -10,6 +10,8 @@ public class Product : IEntity
 
 	public string ShortIntro { get; set; }
 
+	public DateTime CreateDate { get; set; }
+
 	public string Description { get; set; }
 
 	public string UrlSlug { get; set; }
@@ -39,8 +41,9 @@ public class Product : IEntity
 public class Feedback
 {
 	public Guid Id { get; set; }
+	public Guid ProductId { get; set; }
 	
-	public string UserID { get; set; }
+	public string UserName { get; set; }
 
 	public DateTime PostDate { get; set; }
 

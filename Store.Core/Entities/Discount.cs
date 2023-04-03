@@ -6,7 +6,11 @@ public class Discount : IEntity
 {
 	public Guid Id { get; set; }
 
-	public string Name { get; set; }
+	public int Quantity { get; set; }
+
+	public float MinPrice { get; set; }
+
+	public DateTime ExpiryDate { get; set; }
 
 	public string Code { get; set; }
 

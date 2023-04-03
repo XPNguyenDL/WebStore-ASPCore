@@ -19,10 +19,5 @@ public class PictureMap : IEntityTypeConfiguration<Picture>
 		builder.Property(p => p.Active)
 			.IsRequired()
 			.HasDefaultValue(false);
-
-		builder.HasOne(s => s.Product)
-			.WithMany(s => s.Pictures)
-			.HasForeignKey(s => s.ProductId)
-			.OnDelete(DeleteBehavior.Cascade);
 	}
 }

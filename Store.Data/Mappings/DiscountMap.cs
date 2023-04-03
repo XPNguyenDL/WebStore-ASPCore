@@ -13,9 +13,16 @@ public class DiscountMap : IEntityTypeConfiguration<Discount>
 
 		builder.ToTable("Discounts");
 
-		builder.Property(s => s.Name)
+		builder.Property(s => s.Quantity)
 			.IsRequired()
-			.HasMaxLength(512);
+			.HasDefaultValue(0);
+
+		builder.Property(s => s.MinPrice)
+			.HasDefaultValue(0);
+
+		builder.Property(s => s.ExpiryDate)
+			.IsRequired()
+			.HasColumnType("datetime");
 
 		builder.Property(s => s.Code)
 			.IsRequired()

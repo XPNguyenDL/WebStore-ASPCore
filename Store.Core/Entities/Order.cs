@@ -1,4 +1,5 @@
-﻿using Store.Core.Contracts;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Store.Core.Contracts;
 
 namespace Store.Core.Entities;
 
@@ -18,11 +19,13 @@ public class Order : IEntity
 
 	public DateTime OrderDate { get; set; }
 
+	public string UrlSlug { get; set; }
+
 	public OrderStatus Status { get; set; }
 
 	public string FirstName { get; set; }
 
-	public string? LastName { get; set; }
+	public string LastName { get; set; }
 
 	public string Email { get; set; }
 
@@ -31,7 +34,9 @@ public class Order : IEntity
 	public string ShipTel { get; set; } // Số điện thoại người nhận
 
 	public string Note { get; set; }
+	
 
+	[NotMapped]
 	public double Total { get; set; }
 
 	// ======================================================

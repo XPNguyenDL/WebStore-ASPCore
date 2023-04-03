@@ -18,6 +18,10 @@ public class OrderMap : IEntityTypeConfiguration<Order>
 		builder.Property(o => o.LastName)
 			.HasMaxLength(56);
 
+		builder.Property(s => s.UrlSlug)
+			.IsRequired()
+			.HasMaxLength(128);
+
 		builder.Property(o => o.Email)
 			.IsRequired()
 			.HasMaxLength(100);

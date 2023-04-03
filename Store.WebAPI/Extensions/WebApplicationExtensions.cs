@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NLog.Web;
 using Store.Data.Contexts;
+using Store.Data.Seeder;
+using Store.Services.Shops;
 using Store.WebAPI.Media;
 
 namespace Store.WebAPI.Extensions;
@@ -18,6 +20,8 @@ public static class WebApplicationExtensions
 					builder.Configuration.GetConnectionString("DefaultConnection")));
 
 		builder.Services.AddScoped<IMediaManager, LocalFileSystemMediaManager>();
+		builder.Services.AddScoped<IDataSeeder, DataSeeder>();
+		builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 
 
 		return builder;
@@ -43,6 +47,24 @@ public static class WebApplicationExtensions
 		builder.Host.UseNLog();
 
 		return builder;
+	}
+
+	public static IApplicationBuilder UseDataSeeder(
+		this IApplicationBuilder app)
+	{
+		using var scope = app.ApplicationServices.CreateScope();
+
+		try
+		{
+			scope.ServiceProvider.GetRequiredService<IDataSeeder>().Initialize();
+		}
+		catch (Exception e)
+		{
+			scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
+				.LogError(e, "Count not insert data into database");
+		}
+
+		return app;
 	}
 
 	public static WebApplicationBuilder ConfigureSwaggerOpenApi(
