@@ -34,7 +34,6 @@ public class Order : IEntity
 	public string ShipTel { get; set; } // Số điện thoại người nhận
 
 	public string Note { get; set; }
-	
 
 	[NotMapped]
 	public double Total { get; set; }

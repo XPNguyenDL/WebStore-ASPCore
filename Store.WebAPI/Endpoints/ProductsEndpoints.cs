@@ -41,7 +41,7 @@ public static class ProductsEndpoints
 		IMapper mapper)
 	{
 		var product = await repository.GetProductById(id);
-
+		
 		if (product == null)
 		{
 			return Results.NotFound("Không tìm thấy sản phẩm");
@@ -97,4 +97,5 @@ public static class ProductsEndpoints
 		await repository.SetImageUrlAsync(id, imageUrl);
 		return Results.Ok(ApiResponse.Success("Lưu thành công"));
 	}
+	
 }

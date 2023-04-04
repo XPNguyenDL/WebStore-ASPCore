@@ -23,7 +23,8 @@ var app = builder.Build();
 	app.UseDataSeeder();
 
 	// Config endpoint;
-	app.MapProductEndpoints();
+	app.MapProductEndpoints()
+		.MapAccountEndpoints();
 
 	app.Run();
 }

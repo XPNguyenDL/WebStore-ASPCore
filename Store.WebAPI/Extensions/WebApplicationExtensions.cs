@@ -1,4 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
 using Store.Data.Contexts;
 using Store.Data.Seeder;
@@ -14,14 +19,36 @@ public static class WebApplicationExtensions
 	{
 		builder.Services.AddMemoryCache();
 
+		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+			.AddJwtBearer(option =>
+				option.TokenValidationParameters = new TokenValidationParameters()
+				{
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					ValidIssuer = builder.Configuration["Jwt:Issuer"],
+					ValidAudience = builder.Configuration["Jwt:Audience"],
+					IssuerSigningKey = new SymmetricSecurityKey(
+						Encoding.UTF8.GetBytes(
+							builder.Configuration["Jwt:Key"]))
+				});
+
+		builder.Services.AddAuthorization(options =>
+		{
+			options.AddPolicy("RequireAdminRole", policy =>
+				policy.RequireRole("role", "User"));
+		});
+		
 		builder.Services.AddDbContext<StoreDbContext>(
-			option =>
-				option.UseSqlServer(
-					builder.Configuration.GetConnectionString("DefaultConnection")));
+				option =>
+					option.UseSqlServer(
+						builder.Configuration.GetConnectionString("DefaultConnection")));
 
 		builder.Services.AddScoped<IMediaManager, LocalFileSystemMediaManager>();
 		builder.Services.AddScoped<IDataSeeder, DataSeeder>();
 		builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
+		builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 		return builder;
@@ -88,6 +115,11 @@ public static class WebApplicationExtensions
 		app.UseStaticFiles();
 
 		app.UseHttpsRedirection();
+
+		app.UseAuthentication();
+		app.UseAuthorization();
+
+
 
 		app.UseCors("StoreApp");
 

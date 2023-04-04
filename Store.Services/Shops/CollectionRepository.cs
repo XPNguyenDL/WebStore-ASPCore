@@ -24,6 +24,14 @@ public class CollectionRepository : ICollectionRepository
 			.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
 	}
 
+	public async Task<Product> GetProductBySlug(string slug, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Product>()
+			.Include(s => s.Category)
+			.Include(s => s.Pictures)
+			.FirstOrDefaultAsync(s => s.UrlSlug.Equals(slug), cancellationToken);
+	}
+
 	public Task<IPagedList<Product>> GetPagedProductsAsync(IProductQuery productQuery, IPagingParams pagingParams,
 		CancellationToken cancellationToken = default)
 	{
