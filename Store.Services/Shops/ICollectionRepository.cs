@@ -6,6 +6,7 @@ namespace Store.Services.Shops;
 public interface ICollectionRepository
 {
 	Task<Product> GetProductById(Guid id, CancellationToken cancellationToken = default);
+	Task<Product> GetProductBySlug(string slug, CancellationToken cancellationToken = default);
 
 	Task<IPagedList<Product>> GetPagedProductsAsync(IProductQuery productQuery, IPagingParams pagingParams,
 		CancellationToken cancellationToken = default);
