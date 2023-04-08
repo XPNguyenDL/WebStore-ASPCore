@@ -11,6 +11,7 @@
     <Folder Include="Constants\" />
     <Folder Include="DTO\" />
     <Folder Include="Entities\" />
+    <Folder Include="Identity\" />
     <Folder Include="Settings\" />
   </ItemGroup>
 
