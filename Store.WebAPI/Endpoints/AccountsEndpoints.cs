@@ -15,7 +15,7 @@ public static class AccountsEndpoints
 	public static WebApplication MapAccountEndpoints(
 		this WebApplication app)
 	{
-		var routeGroupBuilder = app.MapGroup("/api/account");
+		var routeGroupBuilder = app.MapGroup("/api/accounts");
 
 		routeGroupBuilder.MapPost("/", Login)
 			.WithName("Login")
@@ -78,7 +78,9 @@ public static class AccountsEndpoints
 				Username = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value,
 				Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
 				Name = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
-				Id = Guid.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Sid)?.Value)
+				Id = Guid.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Sid)?.Value),
+				RoleNames = userClaims.Where(s => s.Type == ClaimTypes.Role).Select(s => s.Value).ToList()
+
 			};
 		}
 		return null;
@@ -91,22 +93,18 @@ public static class AccountsEndpoints
 		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
 		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-		var claims = new[]
+		var claims = new List<Claim>()
 		{
 			new Claim(ClaimTypes.Sid, user.Id.ToString()),
 			new Claim(ClaimTypes.NameIdentifier, user.Username),
 			new Claim(ClaimTypes.Email, user.Email),
 			new Claim(ClaimTypes.Name, user.Name),
-			new Claim("role", "Seller"),
-			new Claim("role", "Admin"),
-			new Claim("role", "User")
 		};
 
-		//foreach (var role in listRoles)
-		//{
-		//	Array.Resize(ref claims, claims.Length + 1);
-		//	claims[claims.Length - 1] = new Claim("role", role);
-		//}
+		foreach (var role in user.Roles)
+		{
+			claims.Add(new Claim(ClaimTypes.Role, role.Name));
+		}
 
 		var token = new JwtSecurityToken(config["Jwt:Issuer"],
 			config["Jwt:Audience"],

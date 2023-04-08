@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
+using Store.Core.Identity;
 using Store.Data.Contexts;
 using Store.Data.Seeder;
 using Store.Services.Shops;
@@ -37,7 +38,9 @@ public static class WebApplicationExtensions
 		builder.Services.AddAuthorization(options =>
 		{
 			options.AddPolicy("RequireAdminRole", policy =>
-				policy.RequireRole("role", "User"));
+				policy.RequireRole(ClaimTypes.Role, "Admin"));
+			options.AddPolicy("RequireManagerRole", policy =>
+				policy.RequireRole(ClaimTypes.Role, "Manager"));
 		});
 		
 		builder.Services.AddDbContext<StoreDbContext>(
@@ -49,6 +52,7 @@ public static class WebApplicationExtensions
 		builder.Services.AddScoped<IDataSeeder, DataSeeder>();
 		builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 		builder.Services.AddScoped<IUserRepository, UserRepository>();
+		builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 
 		return builder;
