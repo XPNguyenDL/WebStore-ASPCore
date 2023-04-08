@@ -1,15 +1,19 @@
 ﻿using Store.Core.Entities;
+using Store.Core.Identity;
 using Store.Data.Contexts;
+using System.Collections.Generic;
 
 namespace Store.Data.Seeder;
 
 public class DataSeeder : IDataSeeder
 {
 	private readonly StoreDbContext _dbContext;
+	private readonly IPasswordHasher _hasher;
 
-	public DataSeeder(StoreDbContext dbContext)
+	public DataSeeder(StoreDbContext dbContext, IPasswordHasher hasher)
 	{
 		_dbContext = dbContext;
+		_hasher = hasher;
 	}
 
 	public void Initialize()
@@ -24,7 +28,50 @@ public class DataSeeder : IDataSeeder
 		var categories = AddCategories();
 		var discounts = AddDiscount();
 		var products = AddProduct(categories);
-		var orders = AddOrder(products, discounts);
+		var orders = AddOrder(products, discounts); 
+
+		var roles = AddRoles();
+		var users = AddUsers(roles);
+	}
+
+	private IList<Role> AddRoles()
+	{
+		var roles = new List<Role>()
+		{
+			new() {Id = Guid.NewGuid(), Name = "Admin"},
+			new() {Id = Guid.NewGuid(), Name = "Manager"},
+		};
+
+		_dbContext.Roles.AddRange(roles);
+		_dbContext.SaveChanges();
+		return roles;
+	}
+
+	private IList<User> AddUsers(IList<Role> roles)
+	{
+		var users = new List<User>()
+		{
+			new User()
+			{
+				Id = Guid.NewGuid(),
+				Name = "Admin",
+				Email = "Admin@gmail.com",
+				Address = "DLU",
+				Phone = "0123456789",
+				Username = "admin",
+				Password = _hasher.Hash("admin123"),
+				Roles = new List<Role>()
+				{
+					roles[0],
+					roles[1]
+				}
+			}
+		};
+
+		_dbContext.Users.AddRange(users);
+		_dbContext.SaveChanges();
+
+		return users;
 	}
 
 	private IList<Category> AddCategories()
