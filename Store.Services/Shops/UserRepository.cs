@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Store.Core.Entities;
+using Store.Core.Identity;
 using Store.Data.Contexts;
 
 namespace Store.Services.Shops;
@@ -7,19 +8,29 @@ namespace Store.Services.Shops;
 public class UserRepository : IUserRepository
 {
 	private readonly StoreDbContext _dbContext;
+	private readonly IPasswordHasher _hasher;
 
-	public UserRepository(StoreDbContext context)
+	public UserRepository(StoreDbContext context, IPasswordHasher hasher)
 	{
 		_dbContext = context;
+		_hasher = hasher;
 	}
 
 	public async Task<User> GetUser(string username, string password, CancellationToken cancellationToken = default)
 	{
-		return await _dbContext.Users.FirstOrDefaultAsync(user =>
-			user.Username.Equals(username) && user.Password.Equals(password));
+		var user = await _dbContext.Set<User>()
+			.Include(s => s.Roles)
+			.FirstOrDefaultAsync(user =>
+				user.Username.Equals(username), cancellationToken);
+
+		if (user != null && _hasher.VerifyPassword(user.Password, password))
+		{
+			return user;
+		}
+		return null;
 	}
 
-	public Task<User> AddOrUpdatePostAsync(User post, IEnumerable<string> tags, CancellationToken cancellationToken = default)
+	public Task<User> AddOrUpdateUserAsync(User user, IEnumerable<string> roles, CancellationToken cancellationToken = default)
 	{
 		throw new NotImplementedException();
 	}
