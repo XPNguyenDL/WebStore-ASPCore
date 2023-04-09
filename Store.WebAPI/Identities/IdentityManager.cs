@@ -58,7 +58,6 @@ public class IdentityManager
 			claims,
 			expires: DateTime.Now.AddDays(15),
 			signingCredentials: credentials);
-
 		return token;
 	}
 
@@ -70,7 +69,6 @@ public class IdentityManager
 		{
 			return result;
 		}
-
 		return null;
 	}
 }
