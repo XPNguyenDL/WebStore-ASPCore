@@ -4,7 +4,9 @@ using System.Text;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Store.Core.Entities;
 using Store.Services.Shops;
+using Store.WebAPI.Identities;
 using Store.WebAPI.Models;
 using Store.WebAPI.Models.UserModel;
 
@@ -21,10 +23,8 @@ public static class AccountsEndpoints
 			.WithName("Login")
 			.AllowAnonymous();
 
-		routeGroupBuilder.MapGet("/", Test)
-			.WithName("Test")
-			.RequireAuthorization("RequireAdminRole");
-
+		routeGroupBuilder.MapPost("/Register", Register)
+			.WithName("Register");
 
 		return app;
 	}
@@ -36,12 +36,12 @@ public static class AccountsEndpoints
 		[FromServices] IMapper mapper)
 	{
 
-		var user = Authenticate(userLogin, repository, mapper);
+		var user = IdentityManager.Authenticate(userLogin, repository, mapper);
 
 		UserDto userDto = await user;
 		if (userDto != null)
 		{
-			var token = Generate(userDto, configuration);
+			var token = IdentityManager.Generate(userDto, configuration);
 
 			var accessToken = new AccessTokenModel()
 			{
@@ -57,73 +57,26 @@ public static class AccountsEndpoints
 		return Results.NotFound("User not found");
 	}
 
-	private static IResult Test(
-		HttpContext context)
+	private static async Task<IResult> Register(
+		[FromBody] UserEditModel model,
+		[FromServices] IUserRepository repository,
+		[FromServices] IConfiguration configuration,
+		[FromServices] IMapper mapper)
 	{
-		var userModel = GetCurrentUser(context);
-		return Results.Ok(userModel);
-	}
+		var user = mapper.Map<User>(model);
 
-	private static UserDto GetCurrentUser(
-		HttpContext context)
-	{
-		var identity = context.User.Identity as ClaimsIdentity;
-
-		if (identity != null)
+		var userExist = await repository.IsUserExistedAsync(user.Username);
+		if (userExist)
 		{
-			var userClaims = identity.Claims;
-
-			return new UserDto
-			{
-				Username = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value,
-				Email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
-				Name = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
-				Id = Guid.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Sid)?.Value),
-				RoleNames = userClaims.Where(s => s.Type == ClaimTypes.Role).Select(s => s.Value).ToList()
-
-			};
-		}
-		return null;
-	}
-
-	private static JwtSecurityToken Generate(
-		UserDto user,
-		IConfiguration config)
-	{
-		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-		var claims = new List<Claim>()
-		{
-			new Claim(ClaimTypes.Sid, user.Id.ToString()),
-			new Claim(ClaimTypes.NameIdentifier, user.Username),
-			new Claim(ClaimTypes.Email, user.Email),
-			new Claim(ClaimTypes.Name, user.Name),
-		};
-
-		foreach (var role in user.Roles)
-		{
-			claims.Add(new Claim(ClaimTypes.Role, role.Name));
+			return Results.NotFound("Account is exist");
 		}
 
-		var token = new JwtSecurityToken(config["Jwt:Issuer"],
-			config["Jwt:Audience"],
-			claims,
-			expires: DateTime.Now.AddDays(15),
-			signingCredentials: credentials);
+		var newUser = await repository.Register(user, model.ListRoles);
 
-		return token;
+		var userDto = mapper.Map<UserDto>(newUser);
+
+		return Results.Ok(userDto);
 	}
 
-	private static async Task<UserDto> Authenticate(UserLogin userLogin, IUserRepository repository, IMapper mapper)
-	{
-		var currentUser = await repository.GetUser(userLogin.Username, userLogin.Password);
-		var result = mapper.Map<UserDto>(currentUser);
-		if (result != null)
-		{
-			return result;
-		}
 
-		return null;
-	}
 }
