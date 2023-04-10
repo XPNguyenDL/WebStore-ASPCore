@@ -26,6 +26,10 @@ public static class ProductsEndpoints
 			.WithName("GetProductById")
 			.Produces<ProductDto>();
 
+		routeGroupBuilder.MapGet("/bySlug/{slug:regex(^[a-z0-9_-]+$)}", GetProductBySlug)
+			.WithName("GetProductBySlug")
+			.Produces<ProductDto>();
+
 		routeGroupBuilder.MapPost("/{id:guid}/picture", SetProductPicture)
 			.WithName("SetProductPicture")
 			.Accepts<IFormFile>("multipart/form-data")
@@ -45,6 +49,23 @@ public static class ProductsEndpoints
 		if (product == null)
 		{
 			return Results.NotFound("Không tìm thấy sản phẩm");
+		}
+
+		var productDetail = mapper.Map<ProductDto>(product);
+
+		return Results.Ok(productDetail);
+	}
+
+	private static async Task<IResult> GetProductBySlug(
+		string slug,
+		ICollectionRepository repository,
+		IMapper mapper)
+	{
+		var product = await repository.GetProductBySlug(slug);
+
+		if (product == null)
+		{
+			return Results.NotFound($"Không tìm thấy sản phẩm với mã: {slug}.");
 		}
 
 		var productDetail = mapper.Map<ProductDto>(product);
