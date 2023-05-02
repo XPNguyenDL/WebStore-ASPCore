@@ -1,9 +1,7 @@
 ﻿namespace Store.WebAPI.Models.CategoryModel;
 
-public class CategoryDto
+public class CategoryEditModel
 {
-	public Guid Id { get; set; }
-
 	public string Name { get; set; }
 
 	public string UrlSlug { get; set; }
