@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Store.Core.Entities;
 using Store.WebAPI.Models.CategoryModel;
+using Store.WebAPI.Models.OrderModel;
 using Store.WebAPI.Models.PictureModel;
 using Store.WebAPI.Models.ProductModel;
 
