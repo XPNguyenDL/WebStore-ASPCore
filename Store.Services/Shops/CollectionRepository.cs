@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Store.Core.Contracts;
 using Store.Core.Entities;
 using Store.Data.Contexts;
@@ -32,10 +33,55 @@ public class CollectionRepository : ICollectionRepository
 			.FirstOrDefaultAsync(s => s.UrlSlug.Equals(slug), cancellationToken);
 	}
 
+	public async Task<bool> IsProductSlugExistedAsync(Guid productId, string slug, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Product>()
+			.AnyAsync(s => s.Id != productId && s.UrlSlug == slug, cancellationToken);
+	}
+
+	public async Task<Product> AddOrUpdateProductAsync(Product product, CancellationToken cancellationToken = default)
+	{
+		if (_dbContext.Set<Product>().Any(s => s.Id == product.Id))
+		{
+			_dbContext.Entry(product).State = EntityState.Modified;
+		}
+		else
+		{
+			_dbContext.Products.Add(product);
+		}
+
+		await _dbContext.SaveChangesAsync(cancellationToken);
+		return product;
+	}
+
 	public Task<IPagedList<Product>> GetPagedProductsAsync(IProductQuery productQuery, IPagingParams pagingParams,
 		CancellationToken cancellationToken = default)
 	{
 		return FilterProduct(productQuery).ToPagedListAsync(pagingParams, cancellationToken);
+	}
+
+	public Task<IPagedList<Category>> GetPagedCategoriesAsync(string keyword, IPagingParams pagingParams, CancellationToken cancellationToken = default)
+	{
+		var categories = _dbContext.Set<Category>()
+			.WhereIf(!string.IsNullOrWhiteSpace(keyword), s =>
+				s.UrlSlug.Contains(keyword) ||
+				s.Description.Contains(keyword) ||
+				s.Name.Contains(keyword));
+
+		return categories.ToPagedListAsync(pagingParams, cancellationToken);
+	}
+
+	public async Task<IPagedList<T>> GetPagedCategoriesAsync<T>(string keyword, IPagingParams pagingParams, Func<IQueryable<Category>, IQueryable<T>> mapper)
+	{
+		var categories = _dbContext.Set<Category>()
+			.WhereIf(!string.IsNullOrWhiteSpace(keyword), s =>
+				s.UrlSlug.Contains(keyword) ||
+				s.Description.Contains(keyword) ||
+				s.Name.Contains(keyword));
+
+		var projectedCategories = mapper(categories);
+		return await projectedCategories.ToPagedListAsync(pagingParams);
+
 	}
 
 	public async Task<IPagedList<T>> GetPagedProductsAsync<T>(IProductQuery condition, IPagingParams pagingParams, Func<IQueryable<Product>, IQueryable<T>> mapper)
@@ -64,6 +110,65 @@ public class CollectionRepository : ICollectionRepository
 		_dbContext.Pictures.Add(picture);
 		await _dbContext.SaveChangesAsync(cancellationToken);
 		return true;
+	}
+
+	public async Task<IList<Picture>> GetImageUrlsAsync(Guid productId, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Picture>()
+			.Where(s => s.ProductId == productId)
+			.ToListAsync(cancellationToken);
+	}
+
+	public async Task<bool> DeleteImageUrlsAsync(Guid productId, CancellationToken cancellationToken = default)
+	{
+		var pictures = await _dbContext.Set<Picture>()
+			.Where(s => s.ProductId == productId)
+			.ToListAsync(cancellationToken);
+
+		_dbContext.Pictures.RemoveRange(pictures);
+		await _dbContext.SaveChangesAsync(cancellationToken);
+		
+		return true;
+	}
+
+	public async Task<bool> DeleteCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Category>()
+			.Where(x => x.Id == categoryId)
+			.ExecuteDeleteAsync(cancellationToken) > 0;
+	}
+
+	public async Task<bool> DeleteProductAsync(Guid productId, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Product>()
+			.Where(x => x.Id == productId)
+			.ExecuteDeleteAsync(cancellationToken) > 0;
+	}
+
+	public async Task<Category> AddOrUpdateCategoryAsync(Category category, CancellationToken cancellationToken = default)
+	{
+		if (_dbContext.Set<Category>().Any(s => s.Id == category.Id))
+		{
+			_dbContext.Entry(category).State = EntityState.Modified;
+		}
+		else
+		{
+			_dbContext.Categories.Add(category);
+		}
+
+		await _dbContext.SaveChangesAsync(cancellationToken);
+		return category;
+	}
+
+	public async Task<bool> IsCategorySlugExistedAsync(Guid id, string slug, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Category>().AnyAsync(s => s.Id != id && s.UrlSlug.Equals(slug), cancellationToken);
+	}
+
+	public async Task<Category> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Category>()
+			.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
 	}
 
 	private IQueryable<Product> FilterProduct(IProductQuery condition)
