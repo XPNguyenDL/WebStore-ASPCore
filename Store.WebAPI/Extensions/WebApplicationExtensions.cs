@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -53,6 +54,8 @@ public static class WebApplicationExtensions
 		builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 		builder.Services.AddScoped<IUserRepository, UserRepository>();
 		builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+		builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+		builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 
 		return builder;
@@ -67,7 +70,6 @@ public static class WebApplicationExtensions
 					.AllowAnyOrigin()
 					.AllowAnyHeader()
 					.AllowAnyMethod()));
-
 		return builder;
 	}
 
@@ -117,6 +119,22 @@ public static class WebApplicationExtensions
 		}
 
 		app.UseStaticFiles();
+
+		app.Use(async (context, next) =>
+		{
+			context.Request.EnableBuffering(); // Enable buffering to allow reading the body multiple times
+
+			var length = context.Request.ContentLength;
+			if (length != null && length > 0 && length > 33554432) // Check if the length of the request body exceeds the limit
+			{
+				context.Response.StatusCode = StatusCodes.Status413RequestEntityTooLarge;
+				await context.Response.WriteAsync("Request body too large");
+				return;
+			}
+
+			await next();
+		});
+
 
 		app.UseHttpsRedirection();
 
