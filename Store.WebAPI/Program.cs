@@ -24,7 +24,10 @@ var app = builder.Build();
 
 	// Config endpoint;
 	app.MapProductEndpoints()
-		.MapAccountEndpoints();
+		.MapAccountEndpoints()
+		.MapCategoriesEndpoint()
+		.MapOrdersEndpoint()
+		.MapDashboardEndpoint();
 
 	app.Run();
 }
