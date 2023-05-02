@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using MapsterMapper;
@@ -21,7 +22,8 @@ public static class AccountsEndpoints
 
 		routeGroupBuilder.MapPost("/", Login)
 			.WithName("Login")
-			.AllowAnonymous();
+			.AllowAnonymous()
+			.Produces<ApiResponse<AccessTokenModel>>();
 
 		routeGroupBuilder.MapPost("/Register", Register)
 			.WithName("Register");
@@ -51,10 +53,10 @@ public static class AccountsEndpoints
 				TokenType = "bearer"
 			};
 
-			return Results.Ok(accessToken);
+			return Results.Ok(ApiResponse.Success(accessToken));
 		}
 
-		return Results.NotFound("User not found");
+		return Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "UserName or password incorrect"));
 	}
 
 	private static async Task<IResult> Register(

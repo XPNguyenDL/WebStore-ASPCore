@@ -2,6 +2,7 @@
 using Store.Core.Contracts;
 using System.Linq.Dynamic.Core;
 using Store.Core.Collections;
+using System.Linq;
 
 namespace Store.Services.Extensions;
 
@@ -27,16 +28,19 @@ public static class PagedListExtensions
 		IPagingParams pagingParams,
 		CancellationToken cancellationToken = default)
 	{
+		var pageNumber = pagingParams.PageNumber ?? 1;
+		var pageSize = pagingParams.PageSize ?? 10;
+
 		var totalCount = await source.CountAsync(cancellationToken);
 		var items = await source
 			.OrderBy(pagingParams.GetOrderExpression())
-			.Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
-			.Take(pagingParams.PageSize)
+			.Skip((pageNumber - 1) * pageSize)
+			.Take(pageSize)
 			.ToListAsync(cancellationToken);
 		return new PagedList<T>(
 			items,
-			pagingParams.PageNumber,
-			pagingParams.PageSize,
+			pageNumber,
+			pageSize,
 			totalCount);
 	}
 

@@ -33,6 +33,8 @@
     <Folder Include="Filters\" />
     <Folder Include="Mapsters\" />
     <Folder Include="Media\" />
+    <Folder Include="Models\DashboardModel\" />
+    <Folder Include="Models\OrderModel\" />
     <Folder Include="Models\PictureModel\" />
     <Folder Include="Identities\" />
     <Folder Include="Validations\" />

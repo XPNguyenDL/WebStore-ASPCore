@@ -11,4 +11,5 @@ public class ProductQuery : IProductQuery
 	public string ProductSlug { get; set; } = "";
 	public int? Year { get; set; } = 0;
 	public int? Month { get; set; } = 0;
+
 }
