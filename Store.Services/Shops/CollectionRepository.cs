@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Store.Core.Contracts;
 using Store.Core.Entities;
 using Store.Data.Contexts;
@@ -17,7 +18,7 @@ public class CollectionRepository : ICollectionRepository
 	}
 
 
-	public async Task<Product> GetProductById(Guid id, CancellationToken cancellationToken = default)
+	public async Task<Product> GetProductByIdAsync(Guid id, CancellationToken cancellationToken = default)
 	{
 		return await _dbContext.Set<Product>()
 			.Include(s => s.Category)
@@ -69,6 +70,31 @@ public class CollectionRepository : ICollectionRepository
 				s.Name.Contains(keyword));
 
 		return categories.ToPagedListAsync(pagingParams, cancellationToken);
+	}
+
+	public async Task<IList<Product>> GetTopSaleAsync(CancellationToken cancellationToken = default)
+	{
+		return await _dbContext.Set<Product>()
+			.Include(s => s.Details)
+			.Include(s => s.Pictures)
+			.Where(s => s.Quantity > 0 && s.Active == true)
+			.OrderByDescending(s => s.Details.Count())
+			.Take(8)
+			.ToListAsync(cancellationToken);
+	}
+
+	public async Task<IList<Product>> GetRelatedProductsAsync(string slug, CancellationToken cancellationToken = default)
+	{
+		var product = await GetProductBySlug(slug, cancellationToken);
+
+		return await _dbContext.Set<Product>()
+			.Include(s => s.Details)
+			.Include(s => s.Category)
+			.Include(s => s.Pictures)
+			.Where(s => s.Id != product.Id && product.CategoryId == s.CategoryId)
+			.OrderBy(s => Guid.NewGuid())
+			.Take(8)
+			.ToListAsync(cancellationToken);
 	}
 
 	public async Task<IPagedList<T>> GetPagedCategoriesAsync<T>(string keyword, IPagingParams pagingParams, Func<IQueryable<Category>, IQueryable<T>> mapper)
