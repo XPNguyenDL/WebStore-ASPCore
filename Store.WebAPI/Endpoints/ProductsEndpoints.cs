@@ -24,8 +24,16 @@ public static class ProductsEndpoints
 			.WithName("GetProducts")
 			.Produces<ApiResponse<IPagedList<ProductDto>>>();
 
+		routeGroupBuilder.MapGet("/TopSales", GetProductsTopSale)
+			.WithName("GetProductsTopSale")
+			.Produces<ApiResponse<IList<ProductDto>>>();
+
+		routeGroupBuilder.MapGet("/Related/{slug:regex(^[a-z0-9_-]+$)}", GetRelatedProducts)
+			.WithName("GetRelatedProducts")
+			.Produces<ApiResponse<IList<ProductDto>>>();
+
 		routeGroupBuilder.MapGet("/{id:guid}", GetProductById)
-			.WithName("GetProductById")
+			.WithName("GetProductByIdAsync")
 			.Produces<ApiResponse<ProductDto>>();
 
 		routeGroupBuilder.MapGet("/bySlug/{slug:regex(^[a-z0-9_-]+$)}", GetProductBySlug)
@@ -65,7 +73,7 @@ public static class ProductsEndpoints
 		ICollectionRepository repository,
 		IMapper mapper)
 	{
-		var product = await repository.GetProductById(id);
+		var product = await repository.GetProductByIdAsync(id);
 
 		if (product == null)
 		{
@@ -79,8 +87,8 @@ public static class ProductsEndpoints
 
 	private static async Task<IResult> GetProductBySlug(
 		string slug,
-		ICollectionRepository repository,
-		IMapper mapper)
+		[FromServices] ICollectionRepository repository,
+		[FromServices] IMapper mapper)
 	{
 		var product = await repository.GetProductBySlug(slug);
 
@@ -110,6 +118,35 @@ public static class ProductsEndpoints
 		var paginationResult = new PaginationResult<ProductDto>(products);
 
 		return Results.Ok(ApiResponse.Success(paginationResult));
+	}
+
+	private static async Task<IResult> GetProductsTopSale(
+		[FromServices] ICollectionRepository repository,
+		[FromServices] IMapper mapper)
+	{
+
+		var products =
+			await repository.GetTopSaleAsync();
+
+		var productsDto = mapper.Map<IList<ProductDto>>(products);
+		
+
+		return Results.Ok(ApiResponse.Success(productsDto));
+	}
+
+	private static async Task<IResult> GetRelatedProducts(
+		[FromRoute] string slug,
+		[FromServices] ICollectionRepository repository,
+		[FromServices] IMapper mapper)
+	{
+
+		var products =
+			await repository.GetRelatedProductsAsync(slug);
+
+		var productsDto = mapper.Map<IList<ProductDto>>(products);
+
+
+		return Results.Ok(ApiResponse.Success(productsDto));
 	}
 
 	private static async Task<IResult> AddProduct(
@@ -148,7 +185,7 @@ public static class ProductsEndpoints
 				$"Slug {model.UrlSlug} đã được sử dụng"));
 		}
 
-		var product = await repository.GetProductById(id);
+		var product = await repository.GetProductByIdAsync(id);
 		mapper.Map(model, product);
 
 		await repository.AddOrUpdateProductAsync(product);
@@ -163,7 +200,8 @@ public static class ProductsEndpoints
 		[FromServices] IMediaManager mediaManager)
 	{
 		var form = context.Request.Form.Files;
-		var oldProduct = await repository.GetProductById(id);
+
+		var oldProduct = await repository.GetProductByIdAsync(id);
 		if (oldProduct == null)
 		{
 			return Results.Ok(ApiResponse.Fail(
@@ -203,7 +241,7 @@ public static class ProductsEndpoints
 		[FromServices] ICollectionRepository repository,
 		[FromServices] IMediaManager mediaManager)
 	{
-		var oldProduct = await repository.GetProductById(id);
+		var oldProduct = await repository.GetProductByIdAsync(id);
 		if (oldProduct == null)
 		{
 			return Results.Ok(ApiResponse.Fail(
