@@ -111,18 +111,22 @@ public class DataSeeder : IDataSeeder
 			{
 				Id = Guid.NewGuid(),
 				Quantity = 10,
-				Name = "Mừng cậu trở về",
+				Name = "Subaru Và Vì Tinh Tú Thứ Bảy – Tập 1",
 				CreateDate = DateTime.Now,
 				CategoryId = categories[0].Id,
 				ShortIntro = "Một Kaze hòa đồng, tươi sáng và một Moto giản đơn, nghiêm túc lại là bạn thân từ nhỏ.",
-				Description = "Dù khi trưởng thành và có những nhóm bạn khác nhau, hai chàng trai vẫn luôn hiểu rõ người kia hơn ai hết." +
-				              " Cho đến một ngày, Kaze chợt nhận ra tình cảm mình dành cho Moto đã vượt quá ngưỡng tình bạn." +
-				              " Dẫu có cố gắng coi tình cảm ấy là hiểu nhầm đến thế nào hay cố gắng gạt bỏ nó ra sao, " +
-				              "Kazu cũng dần phải thừa nhận, tấm chân tình này là thật…",
+				Description = "Tại thế giới game nổi tiếng “Union”, có một nhóm người chơi đã trở thành huyền thoại. " +
+				              "Tên của họ là Subaru. Họ là nhóm học sinh tiểu học đã thân thiết với nhau từ bé, cùng với Sense của mỗi người, " +
+				              "họ đã chạm đến đỉnh cao nhất của game. Thế nhưng, sự kiện chết người đó đã khiến “Union” chấm dứt hoạt động." +
+				              " Nhóm bạn thân thiết cũng chia xa. 6 năm sau, Haruto giờ đã là học sinh trung học phổ thông. " +
+				              "Cậu lần nữa đăng nhập vào thế giới game mới là “ReUnion”, rồi có cuộc hội ngộ với thiếu nữ nọ. " +
+				              "Cô ấy là Asahi – đồng đội của cậu khi còn ở Subaru, là bạn thanh mai trúc mã, và cũng là người đã chết sáu năm trước." +
+				              " Liệu Asahi là hồn ma điện tử, hay thứ gì khác…? Giao giữa hiện thực và thế giới trong game, " +
+				              "tiểu thuyết thanh xuân đầy đột phá!",
 				Active = true,
 				Discount = 10,
 				Price = 100000,
-				UrlSlug = "mung-cau-tro-ve",
+				UrlSlug = "subaru-va-vi-tinh-tu-thu-bay-tap-1",
 				Pictures = new List<Picture>()
 				{
 					new ()
