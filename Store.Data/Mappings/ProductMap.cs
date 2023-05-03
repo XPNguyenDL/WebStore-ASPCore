@@ -26,7 +26,7 @@ public class ProductMap : IEntityTypeConfiguration<Product>
 			.HasMaxLength(256);
 
 		builder.Property(s => s.Description)
-			.HasMaxLength(512);
+			.HasMaxLength(2048);
 
 		builder.Property(s => s.Price)
 			.IsRequired()

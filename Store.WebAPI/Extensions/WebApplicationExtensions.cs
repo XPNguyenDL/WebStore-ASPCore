@@ -109,17 +109,9 @@ public static class WebApplicationExtensions
 		return builder;
 	}
 
-	public static WebApplication SetupRequestPipeline(
+	public static WebApplication SetupContext(
 		this WebApplication app)
 	{
-		if (app.Environment.IsDevelopment())
-		{
-			app.UseSwagger();
-			app.UseSwaggerUI();
-		}
-
-		app.UseStaticFiles();
-
 		app.Use(async (context, next) =>
 		{
 			context.Request.EnableBuffering(); // Enable buffering to allow reading the body multiple times
@@ -134,6 +126,20 @@ public static class WebApplicationExtensions
 
 			await next();
 		});
+
+		return app;
+	}
+
+	public static WebApplication SetupRequestPipeline(
+		this WebApplication app)
+	{
+		if (app.Environment.IsDevelopment())
+		{
+			app.UseSwagger();
+			app.UseSwaggerUI();
+		}
+
+		app.UseStaticFiles();
 
 
 		app.UseHttpsRedirection();

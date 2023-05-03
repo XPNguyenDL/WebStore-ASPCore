@@ -5,7 +5,7 @@ namespace Store.Services.Shops;
 
 public interface ICollectionRepository
 {
-	Task<Product> GetProductById(Guid id, CancellationToken cancellationToken = default);
+	Task<Product> GetProductByIdAsync(Guid id, CancellationToken cancellationToken = default);
 	Task<Product> GetProductBySlug(string slug, CancellationToken cancellationToken = default);
 	Task<bool> IsProductSlugExistedAsync(Guid productId, string slug, CancellationToken cancellationToken = default);
 
@@ -17,6 +17,9 @@ public interface ICollectionRepository
 	Task<IPagedList<Category>> GetPagedCategoriesAsync(string keyword, IPagingParams pagingParams,
 		CancellationToken cancellationToken = default);
 
+	Task<IList<Product>> GetTopSaleAsync(CancellationToken cancellationToken = default);
+	Task<IList<Product>> GetRelatedProductsAsync(string slug, CancellationToken cancellationToken = default);
+
 	Task<IPagedList<T>> GetPagedCategoriesAsync<T>(
 		string keyword,
 		IPagingParams pagingParams,
@@ -26,6 +29,8 @@ public interface ICollectionRepository
 		IProductQuery condition,
 		IPagingParams pagingParams,
 		Func<IQueryable<Product>, IQueryable<T>> mapper);
+
+
 
 	Task<bool> SetImageUrlAsync(Guid productId, string imageUrl, CancellationToken cancellationToken = default);
 	Task<IList<Picture>> GetImageUrlsAsync(Guid productId, CancellationToken cancellationToken = default);
